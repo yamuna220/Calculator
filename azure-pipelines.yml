@@ -21,7 +21,7 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 - task: PublishTestResults@1
-  condition: succeededorfailed
+  condition: succeededOrFailed()
   inputs:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     testRunTitle: 'Calculator JUnit Tests'
