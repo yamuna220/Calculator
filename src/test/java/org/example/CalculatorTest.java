@@ -9,7 +9,7 @@ public class CalculatorTest {
     }
     @Test
     public void subTest(){
-        assertEquals(5,main.sub(10,15));
+        assertEquals(5,main.sub(15,10));
     }
     @Test
     public void mulTest(){
