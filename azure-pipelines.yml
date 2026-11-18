@@ -1,27 +1,38 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
-- task: Maven@3
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '21'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- script: |
+    echo "JAVA_HOME=$JAVA_HOME"
+    java -version
+    javac -version
+    mvn -version
+  displayName: 'Verify Java 21'
+
+- task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
+    goals: 'clean test'
+    javaHomeOption: 'Path'
+    jdkDirectory: '$(JAVA_HOME)'
     jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
-- task: PublishTestResults@1
-  condition: succeededOrFailed()
+
+- task: PublishTestResults@2
   inputs:
+    testResultsFormat: 'JUnit'
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    testRunTitle: 'Calculator JUnit Tests'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    testRunTitle: 'Calculator Test Results'
+  condition: succeededOrFailed()
